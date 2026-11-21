@@ -63,6 +63,15 @@ resource "aws_instance" "ec2_proxy" {
   iam_instance_profile = aws_iam_instance_profile.proxy_iam_profile.name
   vpc_security_group_ids = [ aws_security_group.proxy_sec_group.id ]
 
+  # turns on IMDSv2
+  metadata_options {
+    http_tokens = "required"
+  }
+
+  root_block_device {
+    encrypted = true
+  }
+
   lifecycle {
     ignore_changes = [ ami ]
   }
