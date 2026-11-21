@@ -61,5 +61,31 @@ resource "aws_instance" "ec2_proxy" {
   }
 
   iam_instance_profile = aws_iam_instance_profile.proxy_iam_profile.name
+  vpc_security_group_ids = [ aws_security_group.proxy_sec_group.id ]
+
+  lifecycle {
+    ignore_changes = [ ami ]
+  }
   
+}
+
+# security groups for the ec2
+resource "aws_security_group" "proxy_sec_group" {
+  name = "${var.project_name}-sec-group"
+  vpc_id = aws_vpc.proxy_vpc.id
+}
+
+resource "aws_vpc_security_group_egress_rule" "proxy_egress" {
+  security_group_id = aws_security_group.proxy_sec_group.id
+  cidr_ipv4 = "0.0.0.0/0"
+  ip_protocol = "-1"
+}
+
+# this might need adjustment later, but for now it should be fine
+resource "aws_vpc_security_group_ingress_rule" "proxy_ingress" {
+  security_group_id = aws_security_group.proxy_sec_group.id
+  ip_protocol = "tcp"
+  cidr_ipv4 = var.proxy_ip_cidr
+  from_port = 8080
+  to_port = 8080
 }
