@@ -17,8 +17,8 @@ resource "aws_iam_role" "proxy_iam" {
 }
 
 # attach the iam to the policy
-resource "aws_iam_role_policy_attachment " "proxy_iam_attach" {
-  name = "${var.project_name}-proxy-iam-attach"
+resource "aws_iam_role_policy_attachment" "proxy_iam_attach" {
+  role = aws_iam_role.proxy_iam.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
