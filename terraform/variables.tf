@@ -8,5 +8,5 @@ variable "project_name" {
 
 variable "proxy_ip_cidr" {
   description = "should be the whitelist for IPs accessing this instance"
-  type = string
+  type        = string
 }

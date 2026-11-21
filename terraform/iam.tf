@@ -1,24 +1,24 @@
 # trust policy for ec2
 data "aws_iam_policy_document" "proxy_assume" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["sts:AssumeRole"]
     principals {
-        type = "Service"
-      identifiers = [ "ec2.amazonaws.com" ]
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
     }
   }
 }
 
 # only ec2 services can assume the role of "${var.project_name}-proxy-iam" 
 resource "aws_iam_role" "proxy_iam" {
-  name = "${var.project_name}-proxy-iam"
+  name               = "${var.project_name}-proxy-iam"
   assume_role_policy = data.aws_iam_policy_document.proxy_assume.json
 }
 
 # attach the iam to the policy
 resource "aws_iam_role_policy_attachment" "proxy_iam_attach" {
-  role = aws_iam_role.proxy_iam.name
+  role       = aws_iam_role.proxy_iam.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
