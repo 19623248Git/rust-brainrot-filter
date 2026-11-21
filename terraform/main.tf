@@ -38,6 +38,7 @@ resource "aws_route_table_association" "proxy_rtable_assoc" {
   subnet_id = aws_subnet.proxy_subnet.id
 }
 
+# ec2 config next
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -58,5 +59,7 @@ resource "aws_instance" "ec2_proxy" {
   tags = {
     Name = "${var.project_name}-proxy"
   }
+
+  iam_instance_profile = aws_iam_instance_profile.proxy_iam_profile.name
   
 }
