@@ -6,7 +6,8 @@ variable "project_name" {
   default     = "rust-brainrot-filter"
 }
 
-variable "proxy_ip_cidr" {
-  description = "should be the whitelist for IPs accessing this instance"
-  type        = string
+variable "wireguard_port" {
+  description = "UDP port WireGuard listens on"
+  type        = number
+  default     = 51820
 }

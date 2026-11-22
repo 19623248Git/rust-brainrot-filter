@@ -3,11 +3,15 @@ output "whoami" {
 }
 
 output "pub_ip" {
-  value = aws_instance.ec2_proxy.public_ip
+  value = aws_eip.proxy_eip.public_ip
 }
 
 output "pub_dns" {
-  value = aws_instance.ec2_proxy.public_dns
+  value = aws_eip.proxy_eip.public_dns
+}
+
+output "wireguard_endpoint" {
+  value = "${aws_eip.proxy_eip.public_ip}:${var.wireguard_port}"
 }
 
 output "instance_id" {

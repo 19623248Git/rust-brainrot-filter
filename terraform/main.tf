@@ -90,11 +90,34 @@ resource "aws_vpc_security_group_egress_rule" "proxy_egress" {
   ip_protocol       = "-1"
 }
 
-# this might need adjustment later, but for now it should be fine
+# wireguard handles the cidr, so we let the ingress open to anyone
 resource "aws_vpc_security_group_ingress_rule" "proxy_ingress" {
   security_group_id = aws_security_group.proxy_sec_group.id
-  ip_protocol       = "tcp"
-  cidr_ipv4         = var.proxy_ip_cidr
-  from_port         = 8080
-  to_port           = 8080
+  description       = "WireGuard"
+  ip_protocol       = "udp"
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = var.wireguard_port
+  to_port           = var.wireguard_port
+}
+
+# make the ip address for wireguard consistent
+resource "aws_eip" "proxy_ip" {
+  instance = aws_instance.ec2_proxy.id
+  domain   = "vpc"
+
+  depends_on = [ aws_internet_gateway.proxy_vpc_igw ]
+
+  tags = {
+    Name = "${var.project_name}-eip"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+
+}
+
+resource "aws_eip_association" "proxy_ip_assoc" {
+  instance_id   = aws_instance.ec2_proxy.id
+  allocation_id = aws_eip.proxy_ip.id
 }
