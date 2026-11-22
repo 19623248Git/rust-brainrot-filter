@@ -11,7 +11,7 @@ output "pub_dns" {
 }
 
 output "wireguard_endpoint" {
-  value = "${aws_eip.proxy_eip.public_ip}:${var.wireguard_port}"
+  value = "${aws_eip.proxy_ip.public_ip}:${var.wireguard_port}"
 }
 
 output "instance_id" {
