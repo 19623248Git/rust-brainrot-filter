@@ -3,11 +3,11 @@ output "whoami" {
 }
 
 output "pub_ip" {
-  value = aws_eip.proxy_eip.public_ip
+  value = aws_eip.proxy_ip.public_ip
 }
 
 output "pub_dns" {
-  value = aws_eip.proxy_eip.public_dns
+  value = aws_eip.proxy_ip.public_dns
 }
 
 output "wireguard_endpoint" {

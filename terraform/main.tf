@@ -102,10 +102,7 @@ resource "aws_vpc_security_group_ingress_rule" "proxy_ingress" {
 
 # make the ip address for wireguard consistent
 resource "aws_eip" "proxy_ip" {
-  instance = aws_instance.ec2_proxy.id
   domain   = "vpc"
-
-  depends_on = [ aws_internet_gateway.proxy_vpc_igw ]
 
   tags = {
     Name = "${var.project_name}-eip"
@@ -118,6 +115,7 @@ resource "aws_eip" "proxy_ip" {
 }
 
 resource "aws_eip_association" "proxy_ip_assoc" {
+  depends_on = [ aws_internet_gateway.proxy_vpc_igw ]
   instance_id   = aws_instance.ec2_proxy.id
   allocation_id = aws_eip.proxy_ip.id
 }
