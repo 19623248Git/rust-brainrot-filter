@@ -11,3 +11,12 @@ variable "wireguard_port" {
   type        = number
   default     = 51820
 }
+
+variable "wireguard_peers" {
+  description = "the peers for wireguard, device name => {pub_key, ips}"
+  type = map(object({
+    pub_key = string
+    ips     = string
+  }))
+  default = {}
+}

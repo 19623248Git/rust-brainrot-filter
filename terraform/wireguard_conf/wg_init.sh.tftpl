@@ -1,0 +1,35 @@
+set -euo pipefail
+
+apt-get update
+apt-get install -y wireguard
+
+# turn on port forwarding
+echo 'net.ipv4.ip_forward = 1' > /etc/sysctl.d/99-wireguard.conf
+sysctl --system
+
+# wireguard keygen
+umask 077
+wg genkey | tee /etc/wireguard/priv.key | wg pubkey > /etc/wireguard/pub.key
+
+# get interface
+intf = $(ip route show default | awk 'print {$5}')
+
+# wireguard config
+cat > /etc/wireguard/wg0.conf << EOF
+[Interface]
+Address = 10.8.0.0/24
+ListenPort = ${port}
+PostUp = wg set %i private-key /etc/wireguard/priv.key
+PostUp = iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o $intf -j MASQUERADE
+PostDown = iptables -t nat -D POSTROUTING -s 10.8.0.0/24 -o $intf -j MASQUERADE
+
+%{for n, p in peers}
+# ${n}
+[Peer]
+PublicKey = ${p.pub_key}
+AllowedIPs = ${p.ips}/32
+%{ endfor ~}
+EOF
+
+# launch that shi
+systemctl enable --now wg-quick@wg0

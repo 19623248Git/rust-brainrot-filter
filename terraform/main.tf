@@ -63,6 +63,12 @@ resource "aws_instance" "ec2_proxy" {
   iam_instance_profile   = aws_iam_instance_profile.proxy_iam_profile.name
   vpc_security_group_ids = [aws_security_group.proxy_sec_group.id]
 
+  user_data = templatefile("${path.module}/wireguard_conf/wg_init.sh.tftpl", {
+    port  = var.wireguard_port
+    peers = var.wireguard_peers
+  })
+  user_data_replace_on_change = true
+
   # turns on IMDSv2
   metadata_options {
     http_tokens = "required"
@@ -102,7 +108,7 @@ resource "aws_vpc_security_group_ingress_rule" "proxy_ingress" {
 
 # make the ip address for wireguard consistent
 resource "aws_eip" "proxy_ip" {
-  domain   = "vpc"
+  domain = "vpc"
 
   tags = {
     Name = "${var.project_name}-eip"
@@ -115,7 +121,7 @@ resource "aws_eip" "proxy_ip" {
 }
 
 resource "aws_eip_association" "proxy_ip_assoc" {
-  depends_on = [ aws_internet_gateway.proxy_vpc_igw ]
+  depends_on    = [aws_internet_gateway.proxy_vpc_igw]
   instance_id   = aws_instance.ec2_proxy.id
   allocation_id = aws_eip.proxy_ip.id
 }
